@@ -3,6 +3,7 @@ package com.project.fundmanager.mapper;
 import java.util.List;
 
 import com.project.fundmanager.entity.User;
+import com.project.fundmanager.entity.slimUser;
 import org.apache.ibatis.annotations.*;
 
 @Mapper
@@ -13,8 +14,8 @@ public interface UserMapper {
     @Select("SELECT * FROM users WHERE email = #{email}")
     User getByEmail(@Param("email") String email);
 
-    @Select("SELECT * FROM users LIMIT #{offset}, #{maxResults}")
-    List<User> getAll(@Param("offset") int offset, @Param("maxResults") int maxResults);
+    @Select("SELECT id,name FROM users OFFSET #{offset} LIMIT #{maxResults}")
+    List<slimUser> getAll(@Param("offset") int offset, @Param("maxResults") int maxResults);
 
     @Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "id")
     @Insert("INSERT INTO users (email, password, name, registeredAt) VALUES (#{user.email}, #{user.password}, #{user.name}, #{user.registeredAt})")

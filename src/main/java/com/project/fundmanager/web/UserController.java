@@ -1,6 +1,7 @@
 package com.project.fundmanager.web;
 
 import com.project.fundmanager.entity.User;
+import com.project.fundmanager.entity.slimUser;
 import com.project.fundmanager.service.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,7 +25,7 @@ public class UserController {
         try {
             User user = userService.login(email, password);
             session.setAttribute("id",user.getId());
-            return Map.of("user", user);
+            return Map.of("message","success","user", new slimUser(user));
         } catch (Exception e) {
             return Map.of("error", "SIGNIN_FAILED", "message", e.getMessage());
         }
@@ -34,7 +35,7 @@ public class UserController {
     public Map<String, Object> register(@RequestParam String email,@RequestParam String password,@RequestParam String name) {
         try {
             userService.register(email,password,name);
-            return Map.of("success",null);
+            return Map.of("message","success");
         } catch (Exception e) {
             return Map.of("error", "SIGNIN_FAILED", "message", e.getMessage());
         }
@@ -44,22 +45,18 @@ public class UserController {
     public Map<String, Object> updateUser(@PathVariable String attr,@SessionAttribute long id,
                                           @RequestParam String name,@RequestParam String password) {
         try {
-            switch (attr){
-                case "name":
-                    userService.updateUserName(id,name);
-                    break;
-                case "password":
-                    userService.updateUserPassword(id,password);
-                    break;
+            switch (attr) {
+                case "name" -> userService.updateUserName(id, name);
+                case "password" -> userService.updateUserPassword(id, password);
             }
-            return Map.of("success",null);
+            return Map.of("message","success");
         } catch (Exception e) {
             return Map.of("error", "SIGNIN_FAILED", "message", e.getMessage());
         }
     }
 
     @GetMapping(value = "/getList")
-    public Map<String, Object> getUserList(@RequestParam(defaultValue= "0") int offset, @RequestParam(defaultValue= "0") int maxResults) {
+    public Map<String, Object> getUserList(@RequestParam(defaultValue= "0") int offset, @RequestParam(defaultValue= "100") int maxResults) {
         try {
             return Map.of("success",userService.getUserList(offset,maxResults));
         } catch (Exception e) {

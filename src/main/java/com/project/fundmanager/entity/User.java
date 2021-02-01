@@ -1,6 +1,5 @@
 package com.project.fundmanager.entity;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import java.util.Date;
@@ -13,8 +12,6 @@ public class User {
     private String password;
     private Date registeredAt;
 
-    @Autowired
-    BCryptPasswordEncoder passwordEncoder;
 
     public Long getId() {
         return id;
@@ -45,11 +42,7 @@ public class User {
     }
 
     public void setPassword(String password) {
-        this.password = passwordEncoder.encode(password);
-    }
-
-    public Boolean checkPassword(String password){
-        return passwordEncoder.matches(password,this.password);
+        this.password = password;
     }
 
     public Date getRegisteredAt() {

@@ -1,15 +1,13 @@
 package com.project.fundmanager.service;
 
 import com.project.fundmanager.entity.User;
+import com.project.fundmanager.entity.slimUser;
 import com.project.fundmanager.mapper.UserMapper;
 import org.mybatis.spring.annotation.MapperScan;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,6 +23,9 @@ public class UserService {
     @Autowired
     UserMapper userMapper;
 
+    @Autowired
+    BCryptPasswordEncoder passwordEncoder;
+
     public User getUserById(long id) {
         return userMapper.getById(id);
     }
@@ -33,14 +34,18 @@ public class UserService {
         return userMapper.getByEmail(email);
     }
 
-    public List<User> getUserList(int offset,int maxResults){
+    public List<slimUser> getUserList(int offset, int maxResults){
         return userMapper.getAll(offset,maxResults);
+    }
+
+    public Boolean checkPassword(User toCheck,String password){
+        return passwordEncoder.matches(password,toCheck.getPassword());
     }
 
     public User login(String email, String password) {
         logger.info("try login by {}...", email);
         User user = getUserByEmail(email);
-        if (user.checkPassword(password)) {
+        if (checkPassword(user,password)) {
             return user;
         }
         throw new RuntimeException("login failed.");
@@ -48,13 +53,17 @@ public class UserService {
 
     public User register(String email, String password, String name) {
         logger.info("try register by {}...", email);
-        User user = new User();
-        user.setEmail(email);
-        user.setPassword(password);
-        user.setName(name);
-        user.setRegisteredAt(new Date(System.currentTimeMillis()));
-        userMapper.insert(user);
-        return user;
+        if (userMapper.getByEmail(email)==null){
+            User user = new User();
+            user.setEmail(email);
+            user.setPassword(passwordEncoder.encode(password));
+            user.setName(name);
+            user.setRegisteredAt(new Date(System.currentTimeMillis()));
+            userMapper.insert(user);
+            return user;
+        }else{
+            throw new RuntimeException("邮箱已注册");
+        }
     }
 
     public void updateUserName(Long id, String name) {
@@ -65,7 +74,7 @@ public class UserService {
 
     public void updateUserPassword(Long id, String password) {
         User user = getUserById(id);
-        user.setPassword(password);
+        user.setPassword(passwordEncoder.encode(password));
         userMapper.update(user);
     }
 
