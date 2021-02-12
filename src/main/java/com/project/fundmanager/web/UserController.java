@@ -37,21 +37,31 @@ public class UserController {
             userService.register(email,password,name);
             return Map.of("message","success");
         } catch (Exception e) {
-            return Map.of("error", "SIGNIN_FAILED", "message", e.getMessage());
+            return Map.of("error", "Register_FAILED", "message", e.getMessage());
         }
     }
 
     @PostMapping(value = "/update/{attr}")
     public Map<String, Object> updateUser(@PathVariable String attr,@SessionAttribute long id,
-                                          @RequestParam String name,@RequestParam String password) {
+                                          @RequestParam(required = false) String name,@RequestParam(required = false) String password) {
         try {
             switch (attr) {
-                case "name" -> userService.updateUserName(id, name);
-                case "password" -> userService.updateUserPassword(id, password);
+                case "name" -> {
+                    if (name==null){
+                        throw new RuntimeException("Name can't be empty");
+                    }
+                    userService.updateUserName(id, name);
+                }
+                case "password" -> {
+                    if (password==null){
+                        throw new RuntimeException("Name can't be empty");
+                    }
+                    userService.updateUserPassword(id, password);
+                }
             }
             return Map.of("message","success");
         } catch (Exception e) {
-            return Map.of("error", "SIGNIN_FAILED", "message", e.getMessage());
+            return Map.of("error", "UPDATE_FAILED", "message", e.getMessage());
         }
     }
 
@@ -60,7 +70,7 @@ public class UserController {
         try {
             return Map.of("success",userService.getUserList(offset,maxResults));
         } catch (Exception e) {
-            return Map.of("error", "SIGNIN_FAILED", "message", e.getMessage());
+            return Map.of("error", "AUTH_FAILED", "message", e.getMessage());
         }
     }
 }

@@ -4,4 +4,4 @@
     - [x] login
     - [x] register
     - [x] getList
-    - [ ] update
+    - [x] update
