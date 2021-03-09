@@ -32,6 +32,7 @@ public class ResHeaderGeneralFilterBean extends FilterRegistrationBean<Filter> {
             HttpServletRequest req = (HttpServletRequest) request;
             HttpServletResponse resp = (HttpServletResponse) response;
             resp.setHeader("Access-Control-Allow-Origin","*");
+            resp.setHeader("Access-Control-Allow-Headers", "Content-Type,Access-Token");
             chain.doFilter(request, response);
         }
     }

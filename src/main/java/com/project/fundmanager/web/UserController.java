@@ -21,8 +21,10 @@ public class UserController {
     UserService userService;
 
     @PostMapping(value = "/login")
-    public Map<String, Object> login(@RequestParam String email, @RequestParam String password, HttpSession session) {
+    public Map<String, Object> login(@RequestBody Map<String,String> postData, HttpSession session) {
         try {
+            String email = postData.get("email");
+            String password = postData.get("password");
             User user = userService.login(email, password);
             session.setAttribute("id",user.getId());
             return Map.of("message","success","user", new slimUser(user));
@@ -32,7 +34,10 @@ public class UserController {
     }
 
     @PostMapping(value = "/register")
-    public Map<String, Object> register(@RequestParam String email,@RequestParam String password,@RequestParam String name) {
+    public Map<String, Object> register(@RequestBody Map<String,String> postData) {
+        String email = postData.get("email");
+        String password = postData.get("password");
+        String name = postData.get("name");
         try {
             userService.register(email,password,name);
             return Map.of("message","success");
@@ -42,8 +47,9 @@ public class UserController {
     }
 
     @PostMapping(value = "/update/{attr}")
-    public Map<String, Object> updateUser(@PathVariable String attr,@SessionAttribute long id,
-                                          @RequestParam(required = false) String name,@RequestParam(required = false) String password) {
+    public Map<String, Object> updateUser(@RequestBody Map<String,String> postData,@PathVariable String attr,@SessionAttribute long id) {
+        String name = postData.get("name");
+        String password = postData.get("password");
         try {
             switch (attr) {
                 case "name" -> {
