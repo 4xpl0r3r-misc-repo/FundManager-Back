@@ -22,6 +22,11 @@ public class slimUser {
         this.name = name;
     }
 
+    public slimUser(long id, String name) {
+        this.id = id;
+        this.name = name;
+    }
+
     public slimUser(User toCopy){
         id=toCopy.getId();
         name=toCopy.getName();
