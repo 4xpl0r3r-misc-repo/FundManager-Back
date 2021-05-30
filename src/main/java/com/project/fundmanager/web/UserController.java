@@ -27,7 +27,7 @@ public class UserController {
             String password = postData.get("password");
             User user = userService.login(email, password);
             session.setAttribute("id",user.getId());
-            return Map.of("message","success","user", new slimUser(user));
+            return Map.of("success", new slimUser(user));
         } catch (Exception e) {
             return Map.of("error", "SIGNIN_FAILED", "message", e.getMessage());
         }
@@ -40,7 +40,7 @@ public class UserController {
         String name = postData.get("name");
         try {
             userService.register(email,password,name);
-            return Map.of("message","success");
+            return Map.of("success","");
         } catch (Exception e) {
             return Map.of("error", "Register_FAILED", "message", e.getMessage());
         }
@@ -65,7 +65,7 @@ public class UserController {
                     userService.updateUserPassword(id, password);
                 }
             }
-            return Map.of("message","success");
+            return Map.of("success","");
         } catch (Exception e) {
             return Map.of("error", "UPDATE_FAILED", "message", e.getMessage());
         }

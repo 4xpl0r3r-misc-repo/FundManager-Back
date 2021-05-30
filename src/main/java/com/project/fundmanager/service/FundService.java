@@ -27,7 +27,4 @@ public class FundService {
         return  fundMapper.getAll(offset,maxResults);
     }
 
-    public List<Fund> getFundListWithType(int offset, int maxResults, String type){
-        return fundMapper.getAllWithType(offset,maxResults,type);
-    }
 }

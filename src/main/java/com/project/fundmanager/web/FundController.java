@@ -21,10 +21,14 @@ public class FundController {
     public Map<String, Object> getFundById(@RequestParam(defaultValue= "1") long id) {
         Fund res = fundService.getFundById(id);
         if (res != null){
-            return Map.of("message","success","fund",res );
+            return Map.of("success",res );
         }else {
             return Map.of("error", "Not Found", "message", "The fund of this ID doesn't exist.");
         }
+    }
 
+    @GetMapping(value = "/getFundList")
+    public Map<String ,Object> getFundList(@RequestParam(defaultValue= "0") int offset, @RequestParam(defaultValue= "100") int maxResults){
+        return Map.of("success",fundService.getFundList(offset,maxResults) );
     }
 }
