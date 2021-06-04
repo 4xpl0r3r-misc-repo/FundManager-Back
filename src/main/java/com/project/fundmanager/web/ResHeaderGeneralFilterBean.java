@@ -14,7 +14,7 @@ import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.util.List;
 
-@Order(5)
+//@Order(5)
 @Component
 public class ResHeaderGeneralFilterBean extends FilterRegistrationBean<Filter> {
     final Logger logger = LoggerFactory.getLogger(getClass());
@@ -23,6 +23,7 @@ public class ResHeaderGeneralFilterBean extends FilterRegistrationBean<Filter> {
     public void init() {
         setFilter(new ResHeaderGeneralFilter());
         setUrlPatterns(List.of("/*"));
+        setOrder(5);
     }
 
     class ResHeaderGeneralFilter implements Filter {
@@ -31,8 +32,9 @@ public class ResHeaderGeneralFilterBean extends FilterRegistrationBean<Filter> {
                 throws IOException, ServletException {
             HttpServletRequest req = (HttpServletRequest) request;
             HttpServletResponse resp = (HttpServletResponse) response;
-            resp.setHeader("Access-Control-Allow-Origin","*");
+            resp.setHeader("Access-Control-Allow-Origin",request.getScheme()+"://"+request.getServerName()+":8080");
             resp.setHeader("Access-Control-Allow-Headers", "Content-Type,Access-Token");
+            resp.setHeader("Access-Control-Allow-Credentials", "true");
             chain.doFilter(request, response);
         }
     }

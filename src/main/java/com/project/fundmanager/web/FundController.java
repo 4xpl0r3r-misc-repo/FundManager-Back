@@ -23,12 +23,12 @@ public class FundController {
         if (res != null){
             return Map.of("success",res );
         }else {
-            return Map.of("error", "Not Found", "message", "The fund of this ID doesn't exist.");
+            return Map.of("error",  "The fund of this ID doesn't exist.");
         }
     }
 
     @GetMapping(value = "/getFundList")
-    public Map<String ,Object> getFundList(@RequestParam(defaultValue= "0") int offset, @RequestParam(defaultValue= "100") int maxResults){
+    public Map<String ,Object> getFundList(@RequestParam(defaultValue= "0") int offset, @RequestParam(defaultValue= "1000") int maxResults){
         return Map.of("success",fundService.getFundList(offset,maxResults) );
     }
 }

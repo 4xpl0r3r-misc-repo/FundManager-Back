@@ -20,11 +20,11 @@ public interface UserMapper {
 
     @Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "id")
     @Insert("INSERT INTO users (email, password, name, registeredAt) VALUES (#{user.email}, #{user.password}, #{user.name}, #{user.registeredAt})")
-    void insert(@Param("user") User user);
+    int insert(@Param("user") User user);
 
     @Update("UPDATE users SET name = #{user.name},password = #{user.password}, registeredAt = #{user.registeredAt} WHERE id = #{user.id}")
-    void update(@Param("user") User user);
+    int update(@Param("user") User user);
 
     @Delete("DELETE FROM users WHERE id = #{id}")
-    void deleteById(@Param("id") long id);
+    int deleteById(@Param("id") long id);
 }

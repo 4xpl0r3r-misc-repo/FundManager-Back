@@ -45,6 +45,9 @@ public class UserService {
     public User login(String email, String password) {
         logger.info("try login by {}...", email);
         User user = getUserByEmail(email);
+        if (user == null) {
+            throw new RuntimeException("login failed.");
+        }
         if (checkPassword(user,password)) {
             return user;
         }
@@ -59,26 +62,51 @@ public class UserService {
             user.setPassword(passwordEncoder.encode(password));
             user.setName(name);
             user.setRegisteredAt(new Date(System.currentTimeMillis()));
-            userMapper.insert(user);
+            if(userMapper.insert(user)==0){
+                throw new RuntimeException("SQL didn't modified");
+            }
             return user;
         }else{
-            throw new RuntimeException("邮箱已注册");
+            throw new RuntimeException("The email have been registered");
         }
     }
 
     public void updateUserName(Long id, String name) {
         User user = getUserById(id);
         user.setName(name);
-        userMapper.update(user);
+        if(userMapper.update(user)==0){
+            throw new RuntimeException("SQL didn't modified");
+        }
     }
 
     public void updateUserPassword(Long id, String password) {
         User user = getUserById(id);
         user.setPassword(passwordEncoder.encode(password));
-        userMapper.update(user);
+
+        if(userMapper.update(user) == 0){
+            throw new RuntimeException("SQL didn't modified");
+        }
     }
 
     public void deleteUser(Long id) {
-        userMapper.deleteById(id);
+        if(userMapper.deleteById(id) == 0){
+            throw new RuntimeException("SQL didn't modified");
+        }
+    }
+
+    public double updateUserBalance(Long id,double balance,int type) {
+        User user = getUserById(id);
+        switch (type){
+            case 1:{ // 直接修改
+                user.setBalance(balance);
+            }break;
+            case 2:{ // 作加减
+                user.setBalance(user.getBalance()+balance);
+            }break;
+        }
+        if(userMapper.update(user) == 0){
+            throw new RuntimeException("SQL didn't modified");
+        }
+        return user.getBalance();
     }
 }

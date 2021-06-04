@@ -19,7 +19,7 @@ import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
-@Order(5)
+//@Order(10)
 @Component
 public class ApiAuthUserFilterBean extends FilterRegistrationBean<Filter> {
     final Logger logger = LoggerFactory.getLogger(getClass());
@@ -27,7 +27,8 @@ public class ApiAuthUserFilterBean extends FilterRegistrationBean<Filter> {
     @PostConstruct
     public void init() {
         setFilter(new ApiAuthUserFilter());
-        setUrlPatterns(List.of("/user/update/*","/user/getList"));
+        setUrlPatterns(List.of("/user/update/*","/user/getList","/user/getSelfInfo","/position/*"));
+        setOrder(10);
     }
 
     class ApiAuthUserFilter implements Filter {
@@ -41,7 +42,8 @@ public class ApiAuthUserFilterBean extends FilterRegistrationBean<Filter> {
             if (id==null){
                 logger.warn("Unauthorized user,from ip: {}", request.getRemoteAddr());
                 resp.setStatus(403);
-                resp.getWriter().println("Unauthorized user");
+                resp.getWriter().println("{\"error\":\"Unauthorized user\"}");
+                resp.setContentType("application/json");
 //                return;
             }else {
                 logger.info("Authorized user id {}.", id);

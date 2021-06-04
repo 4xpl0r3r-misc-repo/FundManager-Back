@@ -29,7 +29,7 @@ public class UserController {
             session.setAttribute("id",user.getId());
             return Map.of("success", new slimUser(user));
         } catch (Exception e) {
-            return Map.of("error", "SIGNIN_FAILED", "message", e.getMessage());
+            return Map.of("error",  e.getMessage());
         }
     }
 
@@ -40,9 +40,9 @@ public class UserController {
         String name = postData.get("name");
         try {
             userService.register(email,password,name);
-            return Map.of("success","");
+            return Map.of("success","OK");
         } catch (Exception e) {
-            return Map.of("error", "Register_FAILED", "message", e.getMessage());
+            return Map.of("error",  e.getMessage());
         }
     }
 
@@ -65,9 +65,9 @@ public class UserController {
                     userService.updateUserPassword(id, password);
                 }
             }
-            return Map.of("success","");
+            return Map.of("success","OK");
         } catch (Exception e) {
-            return Map.of("error", "UPDATE_FAILED", "message", e.getMessage());
+            return Map.of("error",  e.getMessage());
         }
     }
 
@@ -76,7 +76,37 @@ public class UserController {
         try {
             return Map.of("success",userService.getUserList(offset,maxResults));
         } catch (Exception e) {
-            return Map.of("error", "AUTH_FAILED", "message", e.getMessage());
+            return Map.of("error",  e.getMessage());
+        }
+    }
+
+    @GetMapping(value = "/getSelfInfo")
+    public  Map<String,Object> getSelfInfo(@SessionAttribute long id){
+        try {
+            return Map.of("success",userService.getUserById(id));
+        } catch (Exception e) {
+            return Map.of("error",  e.getMessage());
+        }
+    }
+
+    @PostMapping(value = "/charge")
+    public Map<String,Object> charge(@RequestBody Map<String,String> postData,@SessionAttribute long id){
+        try {
+            double toCharge = Double.parseDouble(postData.get("toCharge")) ;
+            return Map.of("success",userService.updateUserBalance(id,toCharge,2));
+        } catch (Exception e) {
+            return Map.of("error",  e.getMessage());
+        }
+    }
+
+    @GetMapping(value = "/logout")
+    public Map<String,Object> logout( HttpSession session,@SessionAttribute long id){
+        try {
+            session.invalidate();
+            logger.info("the user with id 2 logout", id);
+            return Map.of("success","OK");
+        } catch (Exception e) {
+            return Map.of("error",  e.getMessage());
         }
     }
 }

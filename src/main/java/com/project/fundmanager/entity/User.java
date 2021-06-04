@@ -11,7 +11,15 @@ public class User {
     private String email;
     private String password;
     private Date registeredAt;
+    private double balance;
 
+    public double getBalance() {
+        return balance;
+    }
+
+    public void setBalance(double balance) {
+        this.balance = balance;
+    }
 
     public Long getId() {
         return id;
