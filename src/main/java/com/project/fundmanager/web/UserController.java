@@ -61,7 +61,7 @@ public class UserController {
                 }
                 case "password" -> {
                     if (password==null){
-                        throw new RuntimeException("Name can't be empty");
+                        throw new RuntimeException("Password can't be empty");
                     }
                     userService.updateUserPassword(id, password);
                 }
