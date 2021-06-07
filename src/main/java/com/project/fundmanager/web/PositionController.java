@@ -2,6 +2,7 @@ package com.project.fundmanager.web;
 
 import com.project.fundmanager.entity.Fund;
 import com.project.fundmanager.entity.Position;
+import com.project.fundmanager.entity.TransactionRecord;
 import com.project.fundmanager.entity.User;
 import com.project.fundmanager.service.FundService;
 import com.project.fundmanager.service.PositionService;
@@ -24,24 +25,20 @@ public class PositionController {
     @Autowired
     UserService userService;
 
+
     @GetMapping("/getSelfPosition")
     public Map<String, Object> getSelfPosition(@SessionAttribute long id){
         try {
-            Position res = positionService.getByUId(id);
-            if (res == null) {
-                return Map.of("error", "Empty", "message", "Don't have any position.");
-            }else {
-                return Map.of("success",positionService.getByUId(id));
-            }
+            return Map.of("success",positionService.getByUId(id));
         } catch (Exception e) {
-            return Map.of("error", "Exception", "message", e.getMessage());
+            return Map.of("error",  e.getMessage());
         }
     }
 
     @PostMapping("/changePosition")
     public Map<String,Object> changePosition(@RequestBody Map<String,String> postData,@SessionAttribute(name = "id") long uid){// id 为uid
         long fid = Long.parseLong(postData.get("fid"));
-        long amount = Long.parseLong(postData.get("amount"));
+        double amount = Double.parseDouble(postData.get("amount")); //此处为份额而不是金额
         if(amount ==0){
             return Map.of("error", "Meet Zero Amount");
         }
@@ -52,7 +49,7 @@ public class PositionController {
             return Map.of("error", "don't have position");
         }else if (amount >0 && amount*toBuy.getCurrentPrice()> theUser.getBalance()){ // 想买但买不起
             return Map.of("error", "Lack of balance");
-        }else if(amount <0 &&pos.getCount() < amount){ // 想卖但不够
+        }else if(amount <0 &&pos.getCount() < -amount){ // 想卖但不够
             return Map.of("error", "Insufficient position");
         }else if(pos == null){ // 新pos
             theUser.setBalance(theUser.getBalance() - amount*toBuy.getCurrentPrice());
@@ -63,7 +60,7 @@ public class PositionController {
             theUser.setBalance(theUser.getBalance() - amount*toBuy.getCurrentPrice());
             pos.setCount(pos.getCount()+amount);
             pos.setHaveCost(pos.getHaveCost()+amount*toBuy.getCurrentPrice());
-            positionService.updatePosition(pos);
+            positionService.updatePosition(pos,amount);
             return Map.of("success", "OK,updated Position");
         }
     }

@@ -2,6 +2,7 @@ package com.project.fundmanager.web;
 
 import com.project.fundmanager.entity.User;
 import com.project.fundmanager.entity.slimUser;
+import com.project.fundmanager.service.TransactionRecordService;
 import com.project.fundmanager.service.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -93,7 +94,7 @@ public class UserController {
     public Map<String,Object> charge(@RequestBody Map<String,String> postData,@SessionAttribute long id){
         try {
             double toCharge = Double.parseDouble(postData.get("toCharge")) ;
-            return Map.of("success",userService.updateUserBalance(id,toCharge,2));
+            return Map.of("success",userService.updateUserBalance(id,toCharge,2,true));
         } catch (Exception e) {
             return Map.of("error",  e.getMessage());
         }

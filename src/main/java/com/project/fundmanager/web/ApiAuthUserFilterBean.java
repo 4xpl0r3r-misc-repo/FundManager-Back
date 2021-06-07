@@ -27,7 +27,7 @@ public class ApiAuthUserFilterBean extends FilterRegistrationBean<Filter> {
     @PostConstruct
     public void init() {
         setFilter(new ApiAuthUserFilter());
-        setUrlPatterns(List.of("/user/update/*","/user/getList","/user/getSelfInfo","/position/*"));
+        setUrlPatterns(List.of("/user/update/*","/user/getList","/user/getSelfInfo","/user/charge","/position/*","/favorite/*","/fund/*","/transactionRecord/*"));
         setOrder(10);
     }
 
@@ -39,7 +39,9 @@ public class ApiAuthUserFilterBean extends FilterRegistrationBean<Filter> {
             HttpServletResponse resp = (HttpServletResponse) response;
             HttpSession session=req.getSession();
             Long id= (Long) session.getAttribute("id");
-            if (id==null){
+            if(req.getMethod().equals("OPTIONS")){//预检
+                resp.setStatus(200);
+            }else if (id==null){
                 logger.warn("Unauthorized user,from ip: {}", request.getRemoteAddr());
                 resp.setStatus(403);
                 resp.getWriter().println("{\"error\":\"Unauthorized user\"}");

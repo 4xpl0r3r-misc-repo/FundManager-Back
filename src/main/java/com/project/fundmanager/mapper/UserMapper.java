@@ -22,7 +22,7 @@ public interface UserMapper {
     @Insert("INSERT INTO users (email, password, name, registeredAt) VALUES (#{user.email}, #{user.password}, #{user.name}, #{user.registeredAt})")
     int insert(@Param("user") User user);
 
-    @Update("UPDATE users SET name = #{user.name},password = #{user.password}, registeredAt = #{user.registeredAt} WHERE id = #{user.id}")
+    @Update("UPDATE users SET name = #{user.name},password = #{user.password}, registeredAt = #{user.registeredAt}, balance=#{user.balance} WHERE id = #{user.id}")
     int update(@Param("user") User user);
 
     @Delete("DELETE FROM users WHERE id = #{id}")

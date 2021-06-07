@@ -3,12 +3,10 @@ package com.project.fundmanager.service;
 import com.project.fundmanager.entity.User;
 import com.project.fundmanager.entity.slimUser;
 import com.project.fundmanager.mapper.UserMapper;
-import org.mybatis.spring.annotation.MapperScan;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,6 +23,8 @@ public class UserService {
 
     @Autowired
     BCryptPasswordEncoder passwordEncoder;
+
+    @Autowired TransactionRecordService transactionRecordService;
 
     public User getUserById(long id) {
         return userMapper.getById(id);
@@ -94,13 +94,22 @@ public class UserService {
         }
     }
 
-    public double updateUserBalance(Long id,double balance,int type) {
+    public double updateUserBalance(Long id,double balance,int type,Boolean needToRecord) {
         User user = getUserById(id);
         switch (type){
             case 1:{ // 直接修改
+                if(balance<0){
+                    throw new RuntimeException("The balance will be lower than 0.");
+                }
                 user.setBalance(balance);
             }break;
             case 2:{ // 作加减
+                if(user.getBalance()+balance<0){
+                    throw new RuntimeException("The balance will be lower than 0.");
+                }
+                if(needToRecord){
+                    transactionRecordService.addTransactionRecord(id,balance);
+                }
                 user.setBalance(user.getBalance()+balance);
             }break;
         }
